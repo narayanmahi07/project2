@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Symptom Checker - SwastAI</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">SwastAI</div>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="doctors.html">Doctors</a></li>
+                <li><a href="appointment.html">Appointment</a></li>
+                <li><a href="symptom-checker.html">Symptom Checker</a></li>
+                <li><a href="login.html">Login</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="symptom-checker">
+            <h2>AI Symptom Checker</h2>
+            <p>Enter your symptoms below and get an instant, AI-powered preliminary assessment.</p>
+            <textarea id="symptomsInput" class="symptom-input" rows="6" placeholder="e.g., fever, headache, sore throat, fatigue"></textarea>
+            <button id="checkSymptomsBtn" class="btn">Check Symptoms</button>
+            <div id="resultBox" class="result-box hidden">
+                <h3>Assessment Result:</h3>
+                <p><strong>Diagnosis:</strong> <span id="diagnosis"></span></p>
+                <p><strong>Recommendation:</strong> <span id="recommendation"></span></p>
+                <p><strong>Severity:</strong> <span id="severity"></span></p>
+                <p class="disclaimer"><small><span id="disclaimer"></span></small></p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 SwastAI. All rights reserved.</p>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const symptomsInput = document.getElementById("symptomsInput");
+            const checkSymptomsBtn = document.getElementById("checkSymptomsBtn");
+            const resultBox = document.getElementById("resultBox");
+            const diagnosisSpan = document.getElementById("diagnosis");
+            const recommendationSpan = document.getElementById("recommendation");
+            const severitySpan = document.getElementById("severity");
+            const disclaimerSpan = document.getElementById("disclaimer");
+
+            checkSymptomsBtn.addEventListener("click", async function() {
+                const symptoms = symptomsInput.value.trim();
+                if (symptoms === "") {
+                    HealthIntelli.Utils.showAlert("Please enter your symptoms.", "warning");
+                    return;
+                }
+
+                resultBox.classList.add("hidden");
+                HealthIntelli.FormValidator.clearErrors();
+
+                const loader = HealthIntelli.Utils.showLoader(resultBox.parentNode);
+
+                try {
+                    const result = await HealthIntelli.APISimulator.checkSymptoms(symptoms);
+                    diagnosisSpan.textContent = result.diagnosis;
+                    recommendationSpan.textContent = result.recommendation;
+                    severitySpan.textContent = result.severity;
+                    disclaimerSpan.textContent = result.disclaimer;
+                    resultBox.classList.remove("hidden");
+                } catch (error) {
+                    console.error("Error checking symptoms:", error);
+                    HealthIntelli.Utils.showAlert("An error occurred while checking symptoms. Please try again.", "error");
+                } finally {
+                    HealthIntelli.Utils.hideLoader(loader);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
